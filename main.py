@@ -14,7 +14,7 @@ class RollingCalculatorApp:
         # Yeniden boyutlandırmayı iptal etme
         self.root.resizable(False, False)
 
-        self.root.geometry("500x500")  # Pencere boyutunu küçülttüm
+        self.root.geometry("600x500")  # Pencere boyutunu biraz genişlettim
         self.root.configure(bg="#F0F0F0")
 
         self.betting_data = []  # Bahis verilerini saklar
@@ -24,7 +24,7 @@ class RollingCalculatorApp:
         top_frame = tk.Frame(self.root, bg="#F0F0F0", pady=10)
         top_frame.pack(fill=tk.X)
 
-        tk.Label(top_frame, text="Oran:", bg="#F0F0F0").grid(row=0, column=0, padx=5, pady=5)
+        tk.Label(top_frame, text="Max Tekil Oran:", bg="#F0F0F0").grid(row=0, column=0, padx=5, pady=5)
         self.odds_entry = tk.Entry(top_frame, width=8)  # Giriş kutularını küçülttüm
         self.odds_entry.grid(row=0, column=1, padx=5, pady=5)
 
@@ -32,7 +32,7 @@ class RollingCalculatorApp:
         self.amount_entry = tk.Entry(top_frame, width=8)
         self.amount_entry.grid(row=0, column=3, padx=5, pady=5)
 
-        tk.Label(top_frame, text="Başlangıç Kasa:", bg="#F0F0F0").grid(row=1, column=0, padx=5, pady=5)
+        tk.Label(top_frame, text="Başlangıç Kasa Tutarı:", bg="#F0F0F0").grid(row=1, column=0, padx=5, pady=5)
         self.balance_entry = tk.Entry(top_frame, width=8)
         self.balance_entry.grid(row=1, column=1, padx=5, pady=5)
 
@@ -62,7 +62,7 @@ class RollingCalculatorApp:
         self.table_frame = tk.Frame(self.root, bg="#F0F0F0")
         self.table_frame.pack(fill=tk.BOTH, expand=True)
 
-        columns = ("Sıra", "Bahis Oranı", "Bahis Tutarı", "Olası Kazanç", "Güncel Kasa")
+        columns = ("Sıra", "Bahis Oranı", "Bahis Tutarı", "Olası Kazanç", "Güncel Kasa", "Net Kar")
         self.treeview = ttk.Treeview(self.table_frame, columns=columns, show="headings")
 
         # Sütun genişliklerini ayarlıyoruz
@@ -71,12 +71,14 @@ class RollingCalculatorApp:
         self.treeview.column("Bahis Tutarı", width=100, anchor="center")
         self.treeview.column("Olası Kazanç", width=100, anchor="center")
         self.treeview.column("Güncel Kasa", width=100, anchor="center")
+        self.treeview.column("Net Kar", width=100, anchor="center")
 
         self.treeview.heading("Sıra", text="Sıra")
         self.treeview.heading("Bahis Oranı", text="Bahis Oranı")
         self.treeview.heading("Bahis Tutarı", text="Bahis Tutarı")
         self.treeview.heading("Olası Kazanç", text="Olası Kazanç")
         self.treeview.heading("Güncel Kasa", text="Güncel Kasa")
+        self.treeview.heading("Net Kar", text="Net Kar")
 
         self.treeview.pack(fill=tk.BOTH, expand=True)
 
@@ -108,13 +110,15 @@ class RollingCalculatorApp:
             for i in range(roll_count):
                 possible_win = amount * odds
                 new_balance = current_balance - amount + possible_win  # Kaybetme ve kazanma hesaplama
+                net_profit = new_balance - self.initial_balance  # Net kar hesaplama
 
                 self.betting_data.append({
                     "sequence": i + 1,
                     "odds": odds,
                     "amount": amount,
                     "possible_win": possible_win,
-                    "current_balance": new_balance
+                    "current_balance": new_balance,
+                    "net_profit": net_profit
                 })
 
                 # Bahis tutarını belirle - sabit veya %'lik değer ile
@@ -140,7 +144,8 @@ class RollingCalculatorApp:
                 f"{bet['odds']:.2f}", 
                 f"{bet['amount']:.2f}", 
                 f"{bet['possible_win']:.2f}", 
-                f"{bet['current_balance']:.2f}"
+                f"{bet['current_balance']:.2f}",
+                f"{bet['net_profit']:.2f}"
             ))
 
     def clear_bets(self):
@@ -169,46 +174,50 @@ class RollingCalculatorApp:
         config['Bets'] = {}
         for i, bet in enumerate(self.betting_data):
             config['Bets'][f'Bet{i+1}_Sequence'] = str(bet['sequence'])
-            config['Bets'][f'Bet{i+1}_Odds'] = str(bet['odds'])
-            config['Bets'][f'Bet{i+1}_Amount'] = str(bet['amount'])
-            config['Bets'][f'Bet{i+1}_PossibleWin'] = str(bet['possible_win'])
-            config['Bets'][f'Bet{i+1}_CurrentBalance'] = str(bet['current_balance'])
+            config['Bets'][f'Bet{i+1}_Odds'] = f"{bet['odds']:.2f}"
+            config['Bets'][f'Bet{i+1}_Amount'] = f"{bet['amount']:.2f}"
+            config['Bets'][f'Bet{i+1}_PossibleWin'] = f"{bet['possible_win']:.2f}"
+            config['Bets'][f'Bet{i+1}_CurrentBalance'] = f"{bet['current_balance']:.2f}"
+            config['Bets'][f'Bet{i+1}_NetProfit'] = f"{bet['net_profit']:.2f}"
 
-        with open('conf_log.ini', 'w') as configfile:
+        with open("conf_log.ini", "w") as configfile:
             config.write(configfile)
 
     def load_report(self):
-        """INI dosyasından değerleri yükler ve uygulamaya uygular."""
-        config = configparser.ConfigParser(interpolation=None)  # Interpolation'ı kapat
-
-        if not os.path.exists('conf_log.ini'):
+        """Daha önce kaydedilmiş verileri yükler."""
+        if not os.path.exists("conf_log.ini"):
             return
 
-        config.read('conf_log.ini')
+        config = configparser.ConfigParser(interpolation=None)
+        config.read("conf_log.ini")
 
-        settings = config['Settings']
-        self.odds_entry.insert(0, settings.get('Odds', ''))
-        self.amount_entry.insert(0, settings.get('InitialAmount', ''))
-        self.balance_entry.insert(0, settings.get('InitialBalance', ''))
-        self.roll_count_entry.insert(0, settings.get('RollCount', ''))
-        self.option_var.set(settings.get('OptionType', 'Sabit'))
-        self.option_value_entry.insert(0, settings.get('OptionValue', ''))
+        # Girilen değerleri yükle
+        if 'Settings' in config:
+            self.odds_entry.insert(0, config['Settings'].get('Odds', ''))
+            self.amount_entry.insert(0, config['Settings'].get('InitialAmount', ''))
+            self.balance_entry.insert(0, config['Settings'].get('InitialBalance', ''))
+            self.roll_count_entry.insert(0, config['Settings'].get('RollCount', ''))
+            self.option_var.set(config['Settings'].get('OptionType', 'Sabit'))
+            self.option_value_entry.insert(0, config['Settings'].get('OptionValue', ''))
 
-        bets = config['Bets']
-        bet_count = len(bets) // 5  # Her bahis için 5 değer var
+        # Tablo verilerini yükle
+        if 'Bets' in config:
+            self.betting_data = []
+            i = 1
+            while f'Bet{i}_Sequence' in config['Bets']:
+                bet = {
+                    "sequence": int(config['Bets'][f'Bet{i}_Sequence']),
+                    "odds": float(config['Bets'][f'Bet{i}_Odds']),
+                    "amount": float(config['Bets'][f'Bet{i}_Amount']),
+                    "possible_win": float(config['Bets'][f'Bet{i}_PossibleWin']),
+                    "current_balance": float(config['Bets'][f'Bet{i}_CurrentBalance']),
+                    "net_profit": float(config['Bets'][f'Bet{i}_NetProfit'])
+                }
+                self.betting_data.append(bet)
+                i += 1
+            self.update_table()
 
-        self.betting_data = []
-        for i in range(bet_count):
-            self.betting_data.append({
-                'sequence': int(bets[f'Bet{i+1}_Sequence']),
-                'odds': float(bets[f'Bet{i+1}_Odds']),
-                'amount': float(bets[f'Bet{i+1}_Amount']),
-                'possible_win': float(bets[f'Bet{i+1}_PossibleWin']),
-                'current_balance': float(bets[f'Bet{i+1}_CurrentBalance'])
-            })
-
-        self.update_table()
-
+# Uygulamayı başlat
 if __name__ == "__main__":
     root = tk.Tk()
     app = RollingCalculatorApp(root)
