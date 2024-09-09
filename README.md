@@ -37,3 +37,35 @@ Rolling Calculator, spor bahislerinde kullanılmak üzere geliştirilmiş bir uy
 4. "Rapor Kaydet" butonuna tıklayarak verileri kaydedin veya "Temizle" butonuna tıklayarak tabloyu temizleyin.
 5. Daha sonra tekrar çalıştırarak kaydedilmiş verileri yükleyin ve devam edin.
 
+
+# Bu Yazılımın Standart Rolling Sisteminden Farkı Nedir ?
+Rolling bahis stratejisi, uzun vadede büyük kazançlar sağlayabilir. Hazırladığımız yeni özellikte ise kullanıcı kazancının belirlediği oranda sabit veya % oranında kasada kalmasını sağlayabilir ve daha istikrarlı uzun vade kazançları elde edebilir kasayı riske atmadan kayıp durumunda bir önceki kalan kasanın miktarından devam edebilir. Burda önemli olan başlangıç kasanız ile başlangıç tutarınızın doğru girilmesidir. Başlangıç Bahis tutarı başkangıç kasasından herzaman küçük olmak zorundadır.
+
+
+# Standart Rolling Bahis Nedir?
+
+Rolling bahis, spor bahislerinde kullanılan bir stratejidir. Bu sistemde, bir bahis kazandığında, kazanç ve ana para bir sonraki bahiste yeniden yatırılır. Başarılı bahis serileri, katlanarak artan kazançlar sağlar. Ancak, bir kayıp durumunda, yatırılan ana para ve kazançlar tamamen kaybedilir.
+
+## Standart Rolling Bahis Nasıl Oynanır?
+
+1. **Başlangıç Kasa Tutarı Seçilir:**
+   Oyuncu, bahis yapmaya başlamadan önce bir başlangıç kasası belirler. Bu kasa, bahis serisinde kullanılacak olan ana paradır.
+
+2. **Bahis Oranı ve Tutarı Belirlenir:**
+   İlk bahis yapılırken bir bahis oranı ve buna göre bir tutar belirlenir. Bu oran, kazanma durumunda elde edilecek kazançları belirler.
+
+3. **İlk Bahis Yapılır:**
+   Belirlenen bahis oranı ve tutarıyla ilk bahis oynanır. Eğer bu bahis kazanılırsa, kazanç ve ana para bir sonraki bahise yatırılır.
+
+4. **Kazanç ve Kasa Artışı:**
+   Her kazançtan sonra, kazançlar ve ana para toplanır ve bir sonraki bahis için kullanılır. Bu işlem, bir kayıp yaşanana kadar devam eder.
+
+5. **Kayıp Durumu:**
+   Eğer bir bahis kaybedilirse, tüm kazançlar ve ana para kaybedilir. Kasa sıfırlanır ve yeniden başlamak için yeni bir kasa belirlenir.
+
+6. **Strateji ve Kontrol:**
+   Rolling bahis stratejisi, dikkatli kontrol gerektirir. Kasa yönetimi ve kayıpların minimize edilmesi için oyuncuların riski doğru şekilde yönetmesi önemlidir. Kazançlar büyüdükçe, bahislere yatırılan miktarlar da artar ve risk seviyesi yükselir.
+
+
+
+
