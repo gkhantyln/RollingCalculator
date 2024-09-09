@@ -1,10 +1,10 @@
 # Rolling Calculator
 
-![Screen](screen.png)
+![Screen](screen2.png)
 
 ## Genel Bakış
 
-Rolling Calculator, spor bahislerinde kullanılmak üzere geliştirilmiş bir uygulamadır. Bu uygulama, bahis oranları, bahis tutarları, başlangıç kasası ve rolling sayısı gibi verileri girerek bahislerinizi yönetmenizi sağlar. Kazanç ve kayıpları takip eder, güncel kasa durumunu ve bahis tutarlarını hesaplar. Program ayrıca, veri girişini ve hesaplamaları kaydedip yüklemeyi destekler.
+Rolling Calculator, spor bahislerinde kullanılmak üzere geliştirilmiş bir uygulamadır. Bu uygulama, bahis oranları, bahis tutarları, başlangıç kasası ve rolling sayısı gibi verileri girerek bahislerinizi yönetmenizi sağlar. Kazanç ve kayıpları takip eder, güncel kasa durumunu, bahis tutarlarını ve net kar'ı hesaplar. Program ayrıca, veri girişini ve hesaplamaları kaydedip yüklemeyi destekler.
 
 ## Özellikler
 
