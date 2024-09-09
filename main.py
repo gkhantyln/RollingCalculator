@@ -7,7 +7,14 @@ class RollingCalculatorApp:
     def __init__(self, root):
         self.root = root
         self.root.title("Rolling Hesaplama")
-        self.root.geometry("600x600")
+        
+        # Topmost özelliği
+        self.root.wm_attributes("-topmost", 1)
+        
+        # Yeniden boyutlandırmayı iptal etme
+        self.root.resizable(False, False)
+
+        self.root.geometry("500x500")  # Pencere boyutunu küçülttüm
         self.root.configure(bg="#F0F0F0")
 
         self.betting_data = []  # Bahis verilerini saklar
@@ -18,32 +25,38 @@ class RollingCalculatorApp:
         top_frame.pack(fill=tk.X)
 
         tk.Label(top_frame, text="Oran:", bg="#F0F0F0").grid(row=0, column=0, padx=5, pady=5)
-        self.odds_entry = tk.Entry(top_frame)
+        self.odds_entry = tk.Entry(top_frame, width=8)  # Giriş kutularını küçülttüm
         self.odds_entry.grid(row=0, column=1, padx=5, pady=5)
 
         tk.Label(top_frame, text="Başlangıç Bahis Tutarı:", bg="#F0F0F0").grid(row=0, column=2, padx=5, pady=5)
-        self.amount_entry = tk.Entry(top_frame)
+        self.amount_entry = tk.Entry(top_frame, width=8)
         self.amount_entry.grid(row=0, column=3, padx=5, pady=5)
 
         tk.Label(top_frame, text="Başlangıç Kasa:", bg="#F0F0F0").grid(row=1, column=0, padx=5, pady=5)
-        self.balance_entry = tk.Entry(top_frame)
+        self.balance_entry = tk.Entry(top_frame, width=8)
         self.balance_entry.grid(row=1, column=1, padx=5, pady=5)
 
         tk.Label(top_frame, text="Rolling Sayısı:", bg="#F0F0F0").grid(row=1, column=2, padx=5, pady=5)
-        self.roll_count_entry = tk.Entry(top_frame)
+        self.roll_count_entry = tk.Entry(top_frame, width=8)
         self.roll_count_entry.grid(row=1, column=3, padx=5, pady=5)
 
         # Seçenekler: Sabit veya %
         tk.Label(top_frame, text="Sabit/%:", bg="#F0F0F0").grid(row=2, column=0, padx=5, pady=5)
         self.option_var = tk.StringVar(value="Sabit")
-        self.option_menu = ttk.Combobox(top_frame, textvariable=self.option_var, values=["Sabit", "%"])
+        self.option_menu = ttk.Combobox(top_frame, textvariable=self.option_var, values=["Sabit", "%"], width=7)
         self.option_menu.grid(row=2, column=1, padx=5, pady=5)
 
         tk.Label(top_frame, text="Değer:", bg="#F0F0F0").grid(row=2, column=2, padx=5, pady=5)
-        self.option_value_entry = tk.Entry(top_frame)
+        self.option_value_entry = tk.Entry(top_frame, width=8)
         self.option_value_entry.grid(row=2, column=3, padx=5, pady=5)
 
         tk.Button(top_frame, text="Ekle", command=self.add_bets).grid(row=3, column=0, columnspan=4, padx=5, pady=10)
+
+        # Stil ayarları yaparak tablo içeriklerini ortalıyoruz
+        style = ttk.Style()
+        style.configure("Treeview.Heading", anchor="center")  # Başlıkları ortala
+        style.configure("Treeview", rowheight=25)  # Satır yüksekliği ayarla
+        style.configure("Treeview", font=('Arial', 10))  # Yazı tipi ayarla
 
         # Alt kısım - Bahis tablosu
         self.table_frame = tk.Frame(self.root, bg="#F0F0F0")
@@ -51,6 +64,14 @@ class RollingCalculatorApp:
 
         columns = ("Sıra", "Bahis Oranı", "Bahis Tutarı", "Olası Kazanç", "Güncel Kasa")
         self.treeview = ttk.Treeview(self.table_frame, columns=columns, show="headings")
+
+        # Sütun genişliklerini ayarlıyoruz
+        self.treeview.column("Sıra", width=50, anchor="center")
+        self.treeview.column("Bahis Oranı", width=80, anchor="center")
+        self.treeview.column("Bahis Tutarı", width=100, anchor="center")
+        self.treeview.column("Olası Kazanç", width=100, anchor="center")
+        self.treeview.column("Güncel Kasa", width=100, anchor="center")
+
         self.treeview.heading("Sıra", text="Sıra")
         self.treeview.heading("Bahis Oranı", text="Bahis Oranı")
         self.treeview.heading("Bahis Tutarı", text="Bahis Tutarı")
@@ -156,7 +177,6 @@ class RollingCalculatorApp:
         with open('conf_log.ini', 'w') as configfile:
             config.write(configfile)
 
-
     def load_report(self):
         """INI dosyasından değerleri yükler ve uygulamaya uygular."""
         config = configparser.ConfigParser(interpolation=None)  # Interpolation'ı kapat
@@ -175,18 +195,19 @@ class RollingCalculatorApp:
         self.option_value_entry.insert(0, settings.get('OptionValue', ''))
 
         bets = config['Bets']
-        self.betting_data = []
-        for i in range(len(bets) // 5):  # Assuming there are 5 keys per bet
-            bet = {
-                'sequence': int(bets.get(f'Bet{i+1}_Sequence', 0)),
-                'odds': float(bets.get(f'Bet{i+1}_Odds', 0)),
-                'amount': float(bets.get(f'Bet{i+1}_Amount', 0)),
-                'possible_win': float(bets.get(f'Bet{i+1}_PossibleWin', 0)),
-                'current_balance': float(bets.get(f'Bet{i+1}_CurrentBalance', 0))
-            }
-            self.betting_data.append(bet)
-        self.update_table()
+        bet_count = len(bets) // 5  # Her bahis için 5 değer var
 
+        self.betting_data = []
+        for i in range(bet_count):
+            self.betting_data.append({
+                'sequence': int(bets[f'Bet{i+1}_Sequence']),
+                'odds': float(bets[f'Bet{i+1}_Odds']),
+                'amount': float(bets[f'Bet{i+1}_Amount']),
+                'possible_win': float(bets[f'Bet{i+1}_PossibleWin']),
+                'current_balance': float(bets[f'Bet{i+1}_CurrentBalance'])
+            })
+
+        self.update_table()
 
 if __name__ == "__main__":
     root = tk.Tk()
